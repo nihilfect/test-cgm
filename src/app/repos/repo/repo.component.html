@@ -1,1 +1,47 @@
-<p>repo works!</p>
+<button (click)="togglePage()" class="btn btn-outline-dark"
+  [textContent]="viewIssues ? 'Switch to repos' : 'Switch to issues'"></button>
+<div *ngIf="viewIssues; else viewRepos">
+  <form #searchIssuesForm="ngForm" (ngSubmit)="searchIssues()">
+    <div class="d-flex align-center my-3">
+      <input type="text" class="form-control" placeholder="Search by issue" name="byIssue" #byIssue ngModel required>
+    </div>
+    <button [disabled]="!searchIssuesForm.form.valid" type="submit" class="btn btn-outline-dark">Search Issues</button>
+  </form>
+  <h3 class="mt-5">Issues Result:</h3>
+  <div *ngIf="searchResult && searchResult.length > 0">
+    <p class="my-3" *ngFor="let item of searchResult">
+      {{
+                item.title
+            }}
+    </p>
+  </div>
+</div>
+<ng-template #viewRepos>
+  <form #searchForm="ngForm" (ngSubmit)="searchRepos()">
+    <div class="d-flex align-center my-3">
+      <input type="text" class="form-control" placeholder="Search by name" name="byName" #byName ngModel required>
+      <input type="text" class="form-control mx-3" placeholder="Search by language" name="byLanguage" #byLanguage
+        ngModel>
+      <input type="text" class="form-control" placeholder="Search by stars" name="byStars" #byStars pattern="^[0-9]+$"
+        ngModel>
+    </div>
+    <button [disabled]="!searchForm.form.valid" type="submit" class="btn btn-outline-dark">Search Repos</button>
+  </form>
+
+  <table class="table mt-5">
+    <thead>
+      <tr>
+        <th scope="col">Repo Name</th>
+        <th scope="col">Owner Avatar</th>
+        <th scope="col">Created At</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="searchResult && searchResult.length > 0">
+      <tr *ngFor="let item of searchResult">
+        <th scope="row">{{item.full_name}}</th>
+        <td><img [src]="item.owner.avatar_url" alt="Owner's Avatar" width="50" height="50"></td>
+        <td>{{item.created_at | date: 'M/d/yy, h:mm a'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
