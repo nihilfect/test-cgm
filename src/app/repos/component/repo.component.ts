@@ -1,15 +1,18 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-repo',
   templateUrl: './repo.component.html',
-  styleUrls: ['./repo.component.css']
+  styleUrls: ['./repo.component.css'],
+  providers: [DatePipe]
 })
 export class RepoComponent {
 
-  constructor(private http: HttpClient, private angularRouter: Router) { }
+  constructor(private http: HttpClient, private angularRouter: Router, private datePipe: DatePipe) { }
 
   @ViewChild("byName") byName!: ElementRef;
   @ViewChild("byLanguage") byLanguage!: ElementRef;
@@ -51,13 +54,22 @@ export class RepoComponent {
   }
 
   doSearch(searchCriteria: string) {
+    let self = this;
     let baseUrl = this.viewIssues ? this.baseIssuesUrl : this.baseReposUrl;
     let urlString = baseUrl + "?q=" + encodeURIComponent(searchCriteria);
     console.log("Searching for:", urlString);
-    this.http.get(urlString).subscribe({
-      next: (data: Partial<{
-      items: any[]
-    }>) => {
+     // Uso di un rxJs operator per modificare la formattazione del campo created_at
+    this.http.get(urlString).pipe(
+      map((data: Partial<{
+        items: any[]
+      }>) => {
+        data.items?.map(item => {
+          item.translatedCreatedAt = self.datePipe.transform(item.created_at, 'M/d/yy, h:mm a'); 
+        })
+        return data;
+      })
+    ).subscribe({
+      next: (data) => {
       if (data) this.searchResult = data.items!;
     }, error: err => alert(err.error.message)
   })
