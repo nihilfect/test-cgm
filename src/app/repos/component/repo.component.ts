@@ -1,14 +1,15 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-repo',
   templateUrl: './repo.component.html',
   styleUrls: ['./repo.component.css']
 })
-export class RepoComponent implements OnInit {
+export class RepoComponent {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private angularRouter: Router) { }
 
   @ViewChild("byName") byName!: ElementRef;
   @ViewChild("byLanguage") byLanguage!: ElementRef;
@@ -21,9 +22,6 @@ export class RepoComponent implements OnInit {
 
   baseReposUrl = "https://api.github.com/search/repositories";
   baseIssuesUrl = "https://api.github.com/search/issues";
-
-  ngOnInit(): void {
-  }
 
   togglePage() {
     this.viewIssues = !this.viewIssues;
@@ -61,5 +59,13 @@ export class RepoComponent implements OnInit {
     }>) => {
       if (data) this.searchResult = data.items!;
     })
+  }
+
+  goToCommits(repoId: number) {
+    this.angularRouter.navigate(["/commits"], {
+      queryParams: {
+        repo_id: repoId
+      }
+    });
   }
 }
