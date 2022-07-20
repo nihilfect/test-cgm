@@ -32,9 +32,10 @@ export class CommitComponent implements OnInit, OnDestroy {
   searchCommits(repositoryId: number) {
     let searchCommitsEndpoint = `https://api.github.com/repositories/${repositoryId}/commits`;
     console.log("Searching for: ", searchCommitsEndpoint);
-    this.http.get(searchCommitsEndpoint).subscribe(
-      (res: any) => this.commitsResult = res,
-      err => alert(err.error.message)
+    this.http.get(searchCommitsEndpoint).subscribe({
+      next: (res: any) => this.commitsResult = res,
+      error: err => alert(err.error.message)
+    }
   );
   }
 

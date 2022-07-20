@@ -11,7 +11,8 @@ const routes: Routes = [
     path: 'commits',
     loadChildren: () => import('./commits/commits-routing.module')
       .then(m => m.CommitsRoutingModule)
-  }
+  },
+  { path: '**', redirectTo: 'repos' },
 ];
 
 @NgModule({

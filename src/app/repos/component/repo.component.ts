@@ -54,11 +54,13 @@ export class RepoComponent {
     let baseUrl = this.viewIssues ? this.baseIssuesUrl : this.baseReposUrl;
     let urlString = baseUrl + "?q=" + encodeURIComponent(searchCriteria);
     console.log("Searching for:", urlString);
-    this.http.get(urlString).subscribe((data: Partial<{
+    this.http.get(urlString).subscribe({
+      next: (data: Partial<{
       items: any[]
     }>) => {
       if (data) this.searchResult = data.items!;
-    })
+    }, error: err => alert(err.error.message)
+  })
   }
 
   goToCommits(repoId: number) {
